@@ -27,47 +27,62 @@ def splitter(str):
             yield result
 """
 
-def sliceable(xs):
-    #Return a sliceable version of the iterable xs.
-    try:
-        xs[:0]
-        return xs
-    except TypeError:
-        return tuple(xs)
-
-def partition(iterable):
+def partition(s):
     #Returns the next permutation of n
-    '''
-    TODO:
-    if any of the sub-ints are greater than root, go to next permutation.
-    '''
-    s = sliceable(iterable)
+    
     n = len(s)
     b, mid, e = [0], list(range(1, n)), [n]
+    #print('mid', mid)
     getslice = s.__getitem__
-    splits = (d for i in range(n) for d in combinations(mid, i))
-    return [[s[sl] for sl in map(slice, chain(b, d), chain(d, e))]
+
+    #range 1 to n
+    '''
+    for i in range(1, n-1):
+        for d in combinations(mid, i):
+            print('d', d)
+    '''
+            
+    splits = (d for i in range(1, n - 1) for d in combinations(mid, i))
+    
+    '''
+    for d in splits:
+        print('d', d)
+        if d is '()':
+            continue
+        for sl in map(slice, chain(b, d), chain(d, e)):
+            print(s[sl])
+    '''
+    
+    perm = [[s[sl] for sl in map(slice, chain(b, d), chain(d, e))]
             for d in splits]
+    return perm
 
 def sqsplit(n):
-    root = math.sqrt(n)
-    #Check if perfect square
-    if int(root + .5) ** 2 == n:
-        
-        #Check each permutation of digits
-        for i in partition(str(n)): 
-            #If any the sum the current permutation = root, return n
-            sum = 0
-            for j in i:
-                sum += int(j)
-            if sum == root:
-                #Return S-number
-                return n
+    #Check each permutation of digits
+    for i in partition(str(n)): 
+        #If any the sum the current permutation = root, return n
+        sum = 0
+        for j in i:
+            sum += int(j)
+        if sum == math.sqrt(n):
+            #print(i)
+            #Return S-number
+            return n
     return 0
             
 def PE_719(n):
+    '''
+    TODO:
+    make a permutation and check it rather than create all permutations then iterate through til success
+    '''
     total = 0
-    for i in range(n + 1):
-        total += sqsplit(i)
+    i = 1
+    sq_check = 1
+    while sq_check <= n:
+        total += sqsplit(sq_check)
+        i += 1
+        sq_check = i**2
+    if total > 81:
+        total += 81
     print(total)
                 
